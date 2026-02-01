@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 
 import com.gazlaws.codeboard.theme.UiTheme;
 
@@ -18,6 +20,14 @@ public class KeyboardLayoutView extends ViewGroup {
         super(context);
         setBackgroundColor(uiTheme.backgroundColor);
         this.uiTheme = uiTheme;
+
+        if (Build.VERSION.SDK_INT >= 36) {
+            setOnApplyWindowInsetsListener((v, insets) -> {
+                int bottomInset = insets.getInsets(WindowInsets.Type.navigationBars()).bottom;
+                setPadding(0, 0, 0, bottomInset);
+                return insets;
+            });
+        }
     }
 
     @Override
@@ -32,7 +42,7 @@ public class KeyboardLayoutView extends ViewGroup {
                 ? uiTheme.portraitSize
                 : uiTheme.landscapeSize;
 
-        setMeasuredDimension(availableWidth, (int)(availableHeight * keyboardSize));
+        setMeasuredDimension(availableWidth, (int)(availableHeight * keyboardSize) + getPaddingBottom());
     }
 
     @Override
